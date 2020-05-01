@@ -1,0 +1,31 @@
+#include <SoftwareSerial.h>
+SoftwareSerial hc06(10,11);
+
+
+bool on = true;
+void setup(){
+  //Initialize Serial Monitor
+  pinMode(13,OUTPUT);
+  Serial.begin(9600);
+  Serial.println("ENTER AT Commands:");
+  //Initialize Bluetooth Serial Port
+  hc06.begin(9600);
+}
+
+void loop(){
+  //Write data from HC06 to Serial Monitor
+  if (hc06.available()){
+    char in = hc06.read();
+    Serial.print(in);
+    if (in== 'w'){
+      Serial.print("compped\n");
+      digitalWrite(13,on);
+      on = !on;
+    }
+  }
+  
+  //Write from Serial Monitor to HC06
+  if (Serial.available()){
+    hc06.write(Serial.read());
+  }  
+}
