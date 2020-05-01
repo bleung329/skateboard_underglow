@@ -1,4 +1,3 @@
-#include <FastLED.h>
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
@@ -16,12 +15,12 @@ SoftwareSerial hc06(TX,RX);
 char request[REQUEST_SIZE];
 
 //LED SETUP
-#define LED_COUNT 6
 #define LED_L_OUT 7
 #define LED_R_OUT 5
-//Our addresses
-CRGB ledL[LED_COUNT];
-CRGB ledR[LED_COUNT];
+#define LED_COUNT 6
+
+//All the light functions have been stuffed in here
+#include "patterns.h"
 
 //Request Handler
 void req_handle(){
@@ -49,13 +48,18 @@ void req_handle(){
 	#if DEBUG == 1
 		Serial.println(request);
 	#endif
-	if (strncmp(request,"wavy",4)==0)
+	if (!strncmp(request,"wavy",4))
 	{
-		fill_solid(ledL,LED_COUNT,CRGB(100,0,0));
-		FastLED.show();
+		wavy();
+		return;
 	}
-	if (strncmp(request,"rgb",3))
-	{}
+	//if (strncmp(request,"rgb",3))
+	//{}
+	if (!strncmp(request,"off",3))
+	{
+		off();
+		return;
+	}
 	//if (strncmp(request,""))	
 	//{}
 
@@ -86,7 +90,7 @@ void setup(){
 }
 
 void loop(){
-	delay(1000);
+	delay(200);
 	if (hc06.available())
 	{
 		req_handle();
