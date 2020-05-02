@@ -19,6 +19,12 @@ void setup() {
   Wire.write(8); // (8dec -> 0000 1000 binary) Bit D3 High for measuring enable 
   Wire.endTransmission();
   delay(10);
+  //CHANGE RANGE
+  Wire.beginTransmission(ADXL345);
+  Wire.write(0x31); //This is where the range value lives;
+  Wire.write(2); //0000 0010 +-8g mode
+  Wire.endTransmission();
+  delay(10);
 }
 
 void loop() {

@@ -6,6 +6,8 @@
 
 //ACCELEROMETER SETUP
 #define ADX 0x1d //i2c Address
+//SDA -> A4
+//SCL -> A5
 
 //BLUETOOTH SETUP
 #define TX 10 //Connect to TX pin on HC06
@@ -59,9 +61,15 @@ void req_handle(){
 		popo();
 		return;
 	}
+	/*
 	if (!strncmp(request,"rgb",3))
 	{
 		rgb();
+		return;
+	}*/
+	if (!strncmp(request,"bump",4))
+	{
+		bump();
 		return;
 	}
 	if (!strncmp(request,"0",1))
@@ -83,11 +91,14 @@ void setup(){
 		delay(50);
 		Serial.println("Serial active.");
 	#endif
-	//Start bluetooth
-	hc06.begin(9600);
 	//Establish LED strips
 	FastLED.addLeds<WS2812,LED_L_OUT,GRB>(ledL,LED_COUNT);
 	FastLED.addLeds<WS2812,LED_R_OUT,GRB>(ledR,LED_COUNT);
+	off();
+
+	//Start bluetooth
+	hc06.begin(9600);
+	
 	//Start talking to ADX
 	Wire.begin();
   	//Access power control register and set it to start measuring
@@ -96,8 +107,13 @@ void setup(){
   	Wire.write(8); // (8dec -> 0000 1000 binary) Bit D3 High for measuring enable 
   	Wire.endTransmission();
   	delay(10);
-  	off();
-}
+  	//Change range to 8g
+  	Wire.beginTransmission(ADX);
+  	Wire.write(0x31); //This is where the range value lives;
+  	Wire.write(2); //0000 0010 8g mode
+  	Wire.endTransmission();
+  	delay(10);
+}  	
 
 void loop(){
 	delay(200);

@@ -16,7 +16,7 @@ unsigned long curr_time;
 
 //Vaporwave mode, flowing pink and blue.
 //This is a quick and dirty method for making this sliding animation.
-//The continuous linear method is a little more involved.
+//A continuous linear method is a little more involved.
 #define HUE_MIN 175
 #define HUE_MAX 240	
 #define HUE_DIV (HUE_MAX - HUE_MIN) / LED_COUNT
@@ -97,6 +97,17 @@ void popo()
 			FastLED.show();
 		}
 	}
+}
+
+//Bump mode
+//Scales brightness of strip according to magnitude of 
+//shock on the board.
+
+void bump()
+{
+	red = map(analogRead(RPot),0,1023,0,BrightMax);
+    green = map(analogRead(GPot),0,1023,0,BrightMax);
+    blue = map(analogRead(BPot),0,1023,0,BrightMax);
 }
 
 void off()
