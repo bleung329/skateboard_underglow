@@ -5,7 +5,7 @@
 #define DEBUG 0
 
 //ACCELEROMETER SETUP
-#define ADX 0x1d //Address
+#define ADX 0x1d //i2c Address
 
 //BLUETOOTH SETUP
 #define TX 10 //Connect to TX pin on HC06
@@ -48,14 +48,23 @@ void req_handle(){
 	#if DEBUG == 1
 		Serial.println(request);
 	#endif
+	//Strncmp works best. It's not ideal though
 	if (!strncmp(request,"wavy",4))
 	{
 		wavy();
 		return;
 	}
-	//if (strncmp(request,"rgb",3))
-	//{}
-	if (!strncmp(request,"off",3))
+	if (!strncmp(request,"popo",4))
+	{
+		popo();
+		return;
+	}
+	if (!strncmp(request,"rgb",3))
+	{
+		rgb();
+		return;
+	}
+	if (!strncmp(request,"0",1))
 	{
 		off();
 		return;
@@ -87,6 +96,7 @@ void setup(){
   	Wire.write(8); // (8dec -> 0000 1000 binary) Bit D3 High for measuring enable 
   	Wire.endTransmission();
   	delay(10);
+  	off();
 }
 
 void loop(){
