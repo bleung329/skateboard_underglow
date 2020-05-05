@@ -3,6 +3,9 @@
 //A surprise tool we'll use later
 void req_handle();
 
+//Accel values
+float X_out, Y_out, Z_out;
+
 //Our addressables
 CRGB ledL[LED_COUNT];
 CRGB ledR[LED_COUNT];
@@ -20,8 +23,8 @@ unsigned long curr_time;
 #define HUE_MIN 175
 #define HUE_MAX 240	
 #define HUE_DIV (HUE_MAX - HUE_MIN) / LED_COUNT
-#define WAVY_PAUSE_TIME 600
-#define WAVY_MAX 100
+#define WAVY_PAUSE_TIME 200
+#define WAVY_MAX 70
 //Something to save me some multiplication time
 #define double_LED LED_COUNT*2
 
@@ -40,8 +43,10 @@ void wavy()
 	while(true){
 		curr_time = millis();
 		//If new pattern, return and check it out
-		if (hc06.available()){return;}
-
+		if (hc06.available())
+		{
+			return;
+		}
 		//If enough time has passed, update the pattern
 		if (curr_time - prev_time >= WAVY_PAUSE_TIME) 
 		{
@@ -70,15 +75,19 @@ void wavy()
 //Police Lights
 //Self explanatory
 #define PO_PAUSE 1000
-#define PO_MAX 100
+#define PO_MAX 30
 
 void popo()
 {
 	bool swap = false;
-	while(true){
+	while(true)
+	{
 		curr_time = millis();
 		//If new pattern, return and check it out
-		if (hc06.available()){return;}
+		if (hc06.available())
+		{
+			return;
+		}
 		//wee woo wee woo
 		if (curr_time - prev_time >= PO_PAUSE) 
 		{
@@ -102,12 +111,35 @@ void popo()
 //Bump mode
 //Scales brightness of strip according to magnitude of 
 //shock on the board.
+#define BUMP_PAUSE 60
 
 void bump()
 {
-	red = map(analogRead(RPot),0,1023,0,BrightMax);
-    green = map(analogRead(GPot),0,1023,0,BrightMax);
-    blue = map(analogRead(BPot),0,1023,0,BrightMax);
+	int r,g,b;
+	while (true)
+	{
+		curr_time = millis();
+		if (hc06.available())
+		{
+			return;
+		}
+		if (curr_time - prev_time >= BUMP_PAUSE) 
+		{
+			prev_time = curr_time;
+			Wire.beginTransmission(ADX);
+			Wire.write(0x32); // Start with register 0x32 (ACCEL_XOUT_H)
+			Wire.endTransmission(false);
+			Wire.requestFrom(ADX, 6, true); // Read 6 registers total, each axis value is stored in 2 registers
+			X_out = ( Wire.read()| Wire.read() << 8); // X-axis value
+			Y_out = ( Wire.read()| Wire.read() << 8); // Y-axis value
+			Z_out = ( Wire.read()| Wire.read() << 8); // Z-axis value
+			int sum = sqrt(pow(X_out,2)+pow(Y_out,2)+pow(Z_out,2));
+			Serial.println(sum);
+			r = map(sum,0,1023,10,MAX_BRIGHTNESS);
+			fill_solid(ledL,LED_COUNT,CRGB(r,0,0));
+			FastLED.show();
+		}
+	}
 }
 
 void off()

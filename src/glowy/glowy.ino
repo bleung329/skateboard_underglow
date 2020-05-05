@@ -10,16 +10,16 @@
 //SCL -> A5
 
 //BLUETOOTH SETUP
-#define TX 10 //Connect to TX pin on HC06
-#define RX 11 //Connect to RX pin on HC06
+#define TX 4 //Connect to TX pin on HC06
+#define RX 2 //Connect to RX pin on HC06
 #define REQUEST_SIZE 10
 SoftwareSerial hc06(TX,RX);
 char request[REQUEST_SIZE];
 
 //LED SETUP
-#define LED_L_OUT 7
-#define LED_R_OUT 5
-#define LED_COUNT 6
+#define LED_COUNT 16
+#define LED_L_OUT 12
+#define LED_R_OUT 13
 
 //All the light functions have been stuffed in here
 #include "patterns.h"
@@ -91,6 +91,11 @@ void setup(){
 		delay(50);
 		Serial.println("Serial active.");
 	#endif
+
+	//For simpler soldering, I'm powering the BT module through D3
+	pinMode(3,OUTPUT);
+	digitalWrite(3,1);
+
 	//Establish LED strips
 	FastLED.addLeds<WS2812,LED_L_OUT,GRB>(ledL,LED_COUNT);
 	FastLED.addLeds<WS2812,LED_R_OUT,GRB>(ledR,LED_COUNT);
