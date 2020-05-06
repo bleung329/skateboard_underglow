@@ -3,7 +3,7 @@
 
 #define LED_COUNT 1
 #define max_bright 100;
-#define LED_L_OUT 13
+#define LED_L_OUT 13	
 CRGB led[LED_COUNT];
 bool increment = true;
 void setup()

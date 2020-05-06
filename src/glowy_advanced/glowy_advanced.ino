@@ -18,8 +18,8 @@ char request[REQUEST_SIZE];
 
 //LED SETUP
 #define LED_COUNT 16
-#define LED_L_OUT 12
-#define LED_R_OUT 13
+#define LED_L_OUT 12 //Pin for left LED strip
+#define LED_R_OUT 13 //Pin for right LED strip
 
 //All the light functions have been stuffed in here
 #include "patterns.h"
@@ -50,7 +50,7 @@ void req_handle(){
 	#if DEBUG == 1
 		Serial.println(request);
 	#endif
-	//Strncmp works best. It's not ideal though
+	//Strncmp works best. It's not ideal though.
 	if (!strncmp(request,"wavy",4))
 	{
 		wavy();
@@ -72,6 +72,11 @@ void req_handle(){
 		bump();
 		return;
 	}
+	if (!strncmp(request,"breathe",7))
+	{
+		breathe();
+		return;
+	}
 	if (!strncmp(request,"0",1))
 	{
 		off();
@@ -79,7 +84,6 @@ void req_handle(){
 	}
 	//if (strncmp(request,""))	
 	//{}
-
 }
 
 //MAIN

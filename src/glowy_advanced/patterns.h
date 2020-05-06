@@ -1,12 +1,9 @@
 #include <FastLED.h>
 
-//A surprise tool we'll use later
-void req_handle();
-
 //Accel values
 float X_out, Y_out, Z_out;
 
-//Our addressables
+//The addressables
 CRGB ledL[LED_COUNT];
 CRGB ledR[LED_COUNT];
 
@@ -17,16 +14,15 @@ unsigned long curr_time;
 //Options for everything
 #define MAX_BRIGHTNESS 100
 
-//Vaporwave mode, flowing pink and blue.
+//<<Vaporwave mode, flowing pink and blue.>>
 //This is a quick and dirty method for making this sliding animation.
-//A continuous linear method is a little more involved.
+//A continuous/linear method is a little more involved.
 #define HUE_MIN 175
 #define HUE_MAX 240	
 #define HUE_DIV (HUE_MAX - HUE_MIN) / LED_COUNT
-#define WAVY_PAUSE_TIME 200
-#define WAVY_MAX 70
-//Something to save me some multiplication time
-#define double_LED LED_COUNT*2
+#define WAVY_PAUSE_TIME 110
+#define WAVY_MAX 85
+#define double_LED LED_COUNT*2 //Something to save me some multiplication time
 
 void wavy()
 {
@@ -72,9 +68,9 @@ void wavy()
 	}
 }
 
-//Police Lights
-//Self explanatory
-#define PO_PAUSE 1000
+//<<Police Light mode>>
+//Self explanatory.
+#define PO_PAUSE 700
 #define PO_MAX 30
 
 void popo()
@@ -108,7 +104,7 @@ void popo()
 	}
 }
 
-//Bump mode
+//<<Bump mode>>
 //Scales brightness of strip according to magnitude of 
 //shock on the board.
 #define BUMP_PAUSE 60
@@ -135,12 +131,49 @@ void bump()
 			Z_out = ( Wire.read()| Wire.read() << 8); // Z-axis value
 			int sum = sqrt(pow(X_out,2)+pow(Y_out,2)+pow(Z_out,2));
 			Serial.println(sum);
-			r = map(sum,0,1023,10,MAX_BRIGHTNESS);
+			r = map(sum,0,1023,10,100);
 			fill_solid(ledL,LED_COUNT,CRGB(r,0,0));
+			fill_solid(ledR,LED_COUNT,CRGB(r,0,0));
 			FastLED.show();
 		}
 	}
 }
+
+//<<Breathe>>
+#define BREATHE_INCREMENT_PERIOD 70
+#define BREATHE_MAX 70
+void breathe()
+{
+	int r = 0;
+	bool increment = true;
+	while (true)
+	{
+		curr_time = millis();
+		if (hc06.available())
+		{
+			return;
+		}
+		if (curr_time - prev_time >= BREATHE_INCREMENT_PERIOD) 
+		{
+			prev_time = millis();
+			if (increment){++r;}
+			else{r--;}
+			if (r>=BREATHE_MAX)
+			{
+				increment = false;
+			}
+			if (r<=0)
+			{
+				increment = true;
+			}
+			fill_solid(ledL,LED_COUNT,CRGB(r,0,0));
+			fill_solid(ledR,LED_COUNT,CRGB(r,0,0));
+			FastLED.show();
+		}
+	}
+
+}
+
 
 void off()
 {
