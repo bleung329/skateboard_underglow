@@ -45,7 +45,7 @@ void wavy()
 		{
 			return;
 		}
-		if (curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
+		if (!demo && curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
 		{
 			prev_rest_time = millis();
 			rest_handle();
@@ -91,7 +91,7 @@ void popo()
 		{
 			return;
 		}
-		if (curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
+		if (!demo && curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
 		{
 			prev_rest_time = millis();
 			rest_handle();
@@ -165,7 +165,7 @@ void breathe()
 		{
 			return;
 		}
-		if (curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
+		if (!demo && curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
 		{
 			prev_rest_time = millis();
 			rest_handle();
@@ -191,6 +191,12 @@ void breathe()
 
 }
 
+//Ignore rest_handle
+void demo_mode()
+{
+	demo = !demo;
+	off();
+}
 
 void off()
 {

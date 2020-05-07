@@ -3,6 +3,7 @@
 
 //A surprise tool that'll help us later
 void rest_handle();
+bool demo = false;
 
 //DEBUG?
 #define DEBUG 0
@@ -70,6 +71,11 @@ void req_handle(){
 		bump();
 		return;
 	}*/
+	if (!strncmp(request,"demo",4))
+	{
+		demo_mode();
+		return;
+	}
 	if (!strncmp(request,"breathe",7))
 	{
 		breathe();
