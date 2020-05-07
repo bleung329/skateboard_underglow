@@ -1,6 +1,9 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
+//A surprise tool that'll help us later
+void rest_handle();
+
 //DEBUG?
 #define DEBUG 0
 
@@ -62,16 +65,11 @@ void req_handle(){
 		return;
 	}
 	/*
-	if (!strncmp(request,"rgb",3))
-	{
-		rgb();
-		return;
-	}*/
 	if (!strncmp(request,"bump",4))
 	{
 		bump();
 		return;
-	}
+	}*/
 	if (!strncmp(request,"breathe",7))
 	{
 		breathe();
@@ -82,8 +80,31 @@ void req_handle(){
 		off();
 		return;
 	}
-	//if (strncmp(request,""))	
-	//{}
+}
+
+//Rest Handler
+float Z_o;
+void rest_handle(){
+	Wire.beginTransmission(ADX);
+	Wire.write(0x36); // Start with register 0x36 (ACCEL_ZOUT_H)
+	Wire.endTransmission(false);
+	Wire.requestFrom(ADX, 2, true); // Read 2 registers total, each axis value is stored in 2 registers
+	Z_o = ( Wire.read()| Wire.read() << 8); // Z-axis value
+	if (Z_o>30){
+		return;
+	}
+	else
+	{
+		off();
+		while (Z_o<=30){
+			Wire.beginTransmission(ADX);
+			Wire.write(0x36); // Start with register 0x36 (ACCEL_ZOUT_H)
+			Wire.endTransmission(false);
+			Wire.requestFrom(ADX, 2, true); // Read 2 registers total, each axis value is stored in 2 registers
+			Z_o = ( Wire.read()| Wire.read() << 8); // Z-axis value
+		}
+	}
+
 }
 
 //MAIN

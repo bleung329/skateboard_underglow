@@ -9,10 +9,12 @@ CRGB ledR[LED_COUNT];
 
 //Timing 
 unsigned long prev_time = 0;
+unsigned long prev_rest_time = 0;
 unsigned long curr_time;
 
 //Options for everything
 #define MAX_BRIGHTNESS 100
+#define REST_HANDLE_PAUSE 1000
 
 //<<Vaporwave mode, flowing pink and blue.>>
 //This is a quick and dirty method for making this sliding animation.
@@ -42,6 +44,11 @@ void wavy()
 		if (hc06.available())
 		{
 			return;
+		}
+		if (curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
+		{
+			prev_rest_time = millis();
+			rest_handle();
 		}
 		//If enough time has passed, update the pattern
 		if (curr_time - prev_time >= WAVY_PAUSE_TIME) 
@@ -84,6 +91,11 @@ void popo()
 		{
 			return;
 		}
+		if (curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
+		{
+			prev_rest_time = millis();
+			rest_handle();
+		}
 		//wee woo wee woo
 		if (curr_time - prev_time >= PO_PAUSE) 
 		{
@@ -103,7 +115,7 @@ void popo()
 		}
 	}
 }
-
+/*
 //<<Bump mode>>
 //Scales brightness of strip according to magnitude of 
 //shock on the board.
@@ -138,9 +150,9 @@ void bump()
 		}
 	}
 }
-
+*/
 //<<Breathe>>
-#define BREATHE_INCREMENT_PERIOD 70
+#define BREATHE_INCREMENT_PERIOD 20
 #define BREATHE_MAX 70
 void breathe()
 {
@@ -152,6 +164,11 @@ void breathe()
 		if (hc06.available())
 		{
 			return;
+		}
+		if (curr_time - prev_rest_time >= REST_HANDLE_PAUSE)
+		{
+			prev_rest_time = millis();
+			rest_handle();
 		}
 		if (curr_time - prev_time >= BREATHE_INCREMENT_PERIOD) 
 		{
